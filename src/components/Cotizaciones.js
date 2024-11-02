@@ -17,7 +17,7 @@ const Cotizaciones = () => {
   }, []);
 
   const agregarCotizacion = async () => {
-    const nuevaCotizacion = { empresa: nuevaEmpresa, precio: nuevoPrecio, hora: new Date().toLocaleTimeString() };
+    const nuevaCotizacion = { empresa: nuevaEmpresa, precio: nuevoPrecio, fecha: new Date() };
     console.log(nuevaCotizacion);
     await crearCotizacion(nuevaCotizacion);
     setNuevaEmpresa('');

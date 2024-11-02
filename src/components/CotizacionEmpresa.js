@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Typography, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { obtenerCotizacionesPorEmpresa } from '../services/cotizacionesService';
+import GraficoCotizacionHora from './GraficoCotizacionHora';
 
 const CotizacionEmpresa = ({ empresa }) => {
   const [cotizaciones, setCotizaciones] = useState([]);
@@ -12,7 +13,6 @@ const CotizacionEmpresa = ({ empresa }) => {
     const fetchCotizaciones = async () => {
       try {
         const data = await obtenerCotizacionesPorEmpresa(empresa);
-        console.log(data);
         setCotizaciones(data);
       } catch (error) {
         setError("No se pudieron obtener las cotizaciones.");
@@ -29,21 +29,27 @@ const CotizacionEmpresa = ({ empresa }) => {
 
   return (
     <div>
+      {/* Gráfico de Cotización por Hora */}
+      <h1>Cotización de Acciones por Hora</h1>
+      <GraficoCotizacionHora datosCotizaciones={cotizaciones} />
+
       <Typography variant="h4" gutterBottom>
         Cotizaciones de {empresa}
       </Typography>
+
+      {/* Tabla de Cotizaciones */}
       <TableContainer>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Hora</TableCell>
+              <TableCell>Fecha</TableCell>
               <TableCell>Cotización</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {cotizaciones.map((cotizacion) => (
-              <TableRow key={cotizacion.hora}>
-                <TableCell>{cotizacion.hora}</TableCell>
+              <TableRow key={cotizacion.fecha}>
+                <TableCell>{cotizacion.fecha}</TableCell>
                 <TableCell>{cotizacion.precio}</TableCell>
               </TableRow>
             ))}

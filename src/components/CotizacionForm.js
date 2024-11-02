@@ -11,7 +11,7 @@ const CotizacionForm = () => {
     const nuevaCotizacion = { 
       empresa: nuevaEmpresa, 
       precio: nuevoPrecio, 
-      hora: new Date().toLocaleTimeString() 
+      fecha: new Date() 
     };
 
     try {
