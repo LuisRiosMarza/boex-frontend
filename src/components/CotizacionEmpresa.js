@@ -3,8 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { Typography, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { obtenerCotizacionesPorEmpresa } from '../services/cotizacionesService';
 import GraficoCotizacionHora from './GraficoCotizacionHora';
+import { useParams } from 'react-router-dom'; // Importar useParams
 
-const CotizacionEmpresa = ({ empresa }) => {
+const CotizacionEmpresa = () => {
+  const { empresa } = useParams(); // Obtener el parámetro 'empresa' de la URL
   const [cotizaciones, setCotizaciones] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
@@ -49,7 +51,7 @@ const CotizacionEmpresa = ({ empresa }) => {
           <TableBody>
             {cotizaciones.map((cotizacion) => (
               <TableRow key={cotizacion.fecha}>
-                <TableCell>{cotizacion.fecha}</TableCell>
+                <TableCell>{new Date(cotizacion.fecha).toLocaleString()}</TableCell>
                 <TableCell>{cotizacion.precio}</TableCell>
               </TableRow>
             ))}

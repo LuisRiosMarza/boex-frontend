@@ -50,7 +50,7 @@ const CotizacionForm = () => {
         variant="contained" 
         color="primary" 
         onClick={agregarCotizacion}
-        style={{ marginTop: '16px' }} // Estilo opcional
+        style={{ marginTop: '16px' }}
       >
         Agregar Cotización
       </Button>

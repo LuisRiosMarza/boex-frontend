@@ -5,19 +5,19 @@ import Sidebar from './components/Sidebar';
 import CotizacionForm from './components/CotizacionForm';
 import CotizacionEmpresa from './components/CotizacionEmpresa';
 import Navbar from './components/Navbar';
+import Empresas from './components/Empresas';
 
 const App = () => {
   return (
     <Router>
-      <Navbar/>
+      <Navbar />
       <div style={{ display: 'flex' }}>
         <Sidebar />
-        <div style={{ marginLeft: 240, padding: 20 }}>
+        <div style={{ marginLeft: 240, marginTop: 64, padding: 20, flexGrow: 1 }}>
           <Routes>
-            <Route path="/" element={<CotizacionForm />} />
-            <Route path="/empresa1" element={<CotizacionEmpresa empresa="empresa1" />} />
-            <Route path="/empresa2" element={<CotizacionEmpresa empresa="empresa2" />} />
-            <Route path="/empresa3" element={<CotizacionEmpresa empresa="empresa3" />} />
+            <Route path="/" element={<CotizacionForm />} /> {/* Ruta principal */}
+            <Route path="/empresas" element={<Empresas />} /> {/* Nueva ruta para empresas */}
+            <Route path="/:empresa" element={<CotizacionEmpresa />} /> {/* Ruta dinámica para empresas */}
           </Routes>
         </div>
       </div>

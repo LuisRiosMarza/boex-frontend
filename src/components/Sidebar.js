@@ -1,28 +1,34 @@
 // src/components/Sidebar.js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { List, ListItem, ListItemText } from '@mui/material';
 import { Link } from 'react-router-dom';
-
+import { obtenerCotizaciones } from '../services/cotizacionesService';
 
 const Sidebar = () => {
+  const [empresas, setEmpresas] = useState([]);
+
+  useEffect(() => {
+    const fetchEmpresas = async () => {
+      const cotizaciones = await obtenerCotizaciones();
+      const nombresEmpresas = Array.from(new Set(cotizaciones.map((item) => item.empresa)));
+      setEmpresas(nombresEmpresas);
+    };
+    fetchEmpresas();
+  }, []);
+
   return (
     <div style={{ width: 240, position: 'fixed', top: 64, left: 0, height: '100%', backgroundColor: '#f4f4f4' }}>
       <List>
-        <ListItem button component={Link} to="/empresa1">
-          <ListItemText primary="Empresa 1" />
-        </ListItem>
-        <ListItem button component={Link} to="/empresa2">
-          <ListItemText primary="Empresa 2" />
-        </ListItem>
-        <ListItem button component={Link} to="/empresa3">
-          <ListItemText primary="Empresa 3" />
-        </ListItem>
+        {empresas.map((empresa, index) => (
+          <ListItem button component={Link} to={`/${empresa}`} key={index}>
+            <ListItemText primary={empresa} />
+          </ListItem>
+        ))}
         <ListItem button component={Link} to="/">
-          <ListItemText primary="Agregar cotizacion" />
+          <ListItemText primary="Agregar cotización" />
         </ListItem>
-        {/* Agrega más empresas según sea necesario */}
       </List>
-    </div >
+    </div>
   );
 };
 
