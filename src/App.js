@@ -5,7 +5,7 @@ import Sidebar from './components/Sidebar';
 import CotizacionForm from './components/EmpresasForm';
 import CotizacionEmpresa from './components/CotizacionEmpresa';
 import Navbar from './components/Navbar';
-import Empresas from './components/Empresas';
+import EmpresasTarjetas from './components/EmpresasTarjetas';
 
 const App = () => {
   return (
@@ -16,7 +16,7 @@ const App = () => {
         <div style={{ marginLeft: 240, marginTop: 64, padding: 20, flexGrow: 1 }}>
           <Routes>
             <Route path="/" element={<CotizacionForm />} /> {/* Ruta principal */}
-            <Route path="/empresas" element={<Empresas />} /> {/* Nueva ruta para empresas */}
+            <Route path="/empresas" element={<EmpresasTarjetas />} /> {/* Nueva ruta para empresas */}
             <Route path="/:empresa" element={<CotizacionEmpresa />} /> {/* Ruta dinámica para empresas */}
           </Routes>
         </div>

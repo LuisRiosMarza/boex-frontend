@@ -9,9 +9,12 @@ const Sidebar = () => {
 
   useEffect(() => {
     const fetchEmpresas = async () => {
-      const cotizaciones = await obtenerEmpresas();
-      const nombresEmpresas = Array.from(new Set(cotizaciones.map((item) => item.empresa)));
-      setEmpresas(nombresEmpresas);
+      try {
+        const empresasData = await obtenerEmpresas();
+        setEmpresas(empresasData);
+      } catch (error) {
+        console.error("Error al obtener las empresas:", error);
+      }
     };
     fetchEmpresas();
   }, []);
@@ -19,13 +22,13 @@ const Sidebar = () => {
   return (
     <div style={{ width: 240, position: 'fixed', top: 64, left: 0, height: '100%', backgroundColor: '#f4f4f4' }}>
       <List>
-        {empresas.map((empresa, index) => (
-          <ListItem button component={Link} to={`/${empresa}`} key={index}>
-            <ListItemText primary={empresa} />
+        {empresas.map((empresa) => (
+          <ListItem button component={Link} to={`/${empresa.codempresa}`} key={empresa._id}>
+            <ListItemText primary={empresa.empresaNombre}/>
           </ListItem>
         ))}
         <ListItem button component={Link} to="/">
-          <ListItemText primary="Agregar cotización" />
+          <ListItemText primary="Agregar Empresa" />
         </ListItem>
       </List>
     </div>

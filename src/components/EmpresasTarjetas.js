@@ -1,46 +1,52 @@
-// src/components/Empresas.js
+// src/components/EmpresasTarjetas.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { obtenerEmpresas } from '../services/empresasService';
 
-const Empresas = () => {
+const EmpresasTarjetas = () => {
   const [empresas, setEmpresas] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const obtenerDatos = async () => {
-      const cotizaciones = await obtenerEmpresas();
-      const nombresEmpresas = Array.from(new Set(cotizaciones.map((item) => item.empresa)));
-      setEmpresas(nombresEmpresas);
+      try {
+        const empresasData = await obtenerEmpresas();
+        setEmpresas(empresasData);
+      } catch (error) {
+        console.error("Error al obtener las empresas:", error);
+      }
     };
     obtenerDatos();
   }, []);
 
-  const handleCardClick = (empresa) => {
-    navigate(`/${empresa}`);
+  const handleCardClick = (codempresa) => {
+    navigate(`/${codempresa}`);
   };
 
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', padding: '20px', marginLeft: '240px', marginTop: '64px' }}>
-      {empresas.map((empresa, index) => (
+      {empresas.map((empresa) => (
         <div
-          key={index}
-          onClick={() => handleCardClick(empresa)}
+          key={empresa._id}
+          onClick={() => handleCardClick(empresa.codempresa)}
           style={{
             border: '1px solid #ddd',
             borderRadius: '8px',
             padding: '16px',
-            width: '150px',
+            width: '200px',
             cursor: 'pointer',
             textAlign: 'center',
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
           }}
         >
-          {empresa}
+          <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>{empresa.empresaNombre}</div>
+          <div style={{ fontSize: '14px', color: '#666' }}>Código: {empresa.codempresa}</div>
+          <div style={{ fontSize: '14px', color: '#666' }}>Cotización Inicial: ${empresa.cotizacionInicial}</div>
+          <div style={{ fontSize: '14px', color: '#666' }}>Acciones: {empresa.cantidadAcciones}</div>
         </div>
       ))}
     </div>
   );
 };
 
-export default Empresas;
+export default EmpresasTarjetas;
