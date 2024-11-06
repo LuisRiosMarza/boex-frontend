@@ -1,46 +1,61 @@
-// src/components/Empresas.js
+// BOEX-frontend/src/components/Cotizaciones.js
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { obtenerCotizaciones } from '../services/cotizacionesService';
+import { obtenerEmpresas, crearEmpresa, eliminarEmpresa } from '../services/empresasService';
 
-const Empresas = () => {
-  const [empresas, setEmpresas] = useState([]);
-  const navigate = useNavigate();
+const Cotizaciones = () => {
+  const [cotizaciones, setCotizaciones] = useState([]);
+  const [nuevoPrecio, setNuevoPrecio] = useState('');
+  const [nuevaEmpresa, setNuevaEmpresa] = useState('');
+
+  const cargarCotizaciones = async () => {
+    const data = await obtenerEmpresas();
+    setCotizaciones(data);
+  };
 
   useEffect(() => {
-    const obtenerDatos = async () => {
-      const cotizaciones = await obtenerCotizaciones();
-      const nombresEmpresas = Array.from(new Set(cotizaciones.map((item) => item.empresa)));
-      setEmpresas(nombresEmpresas);
-    };
-    obtenerDatos();
+    cargarCotizaciones();
   }, []);
 
-  const handleCardClick = (empresa) => {
-    navigate(`/${empresa}`);
+  const agregarCotizacion = async () => {
+    const nuevaCotizacion = { empresa: nuevaEmpresa, precio: nuevoPrecio, fecha: new Date() };
+    console.log(nuevaCotizacion);
+    await crearEmpresa(nuevaCotizacion);
+    setNuevaEmpresa('');
+    setNuevoPrecio('');
+    cargarCotizaciones();
+  };
+
+  const eliminar = async (id) => {
+    await eliminarEmpresa(id);
+    cargarCotizaciones();
   };
 
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', padding: '20px', marginLeft: '240px', marginTop: '64px' }}>
-      {empresas.map((empresa, index) => (
-        <div
-          key={index}
-          onClick={() => handleCardClick(empresa)}
-          style={{
-            border: '1px solid #ddd',
-            borderRadius: '8px',
-            padding: '16px',
-            width: '150px',
-            cursor: 'pointer',
-            textAlign: 'center',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-          }}
-        >
-          {empresa}
-        </div>
-      ))}
+    <div>
+      <h1>Cotizaciones</h1>
+      <input
+        type="text"
+        placeholder="Nombre de la Empresa"
+        value={nuevaEmpresa}
+        onChange={(e) => setNuevaEmpresa(e.target.value)}
+      />
+      <input
+        type="number"
+        placeholder="Precio"
+        value={nuevoPrecio}
+        onChange={(e) => setNuevoPrecio(e.target.value)}
+      />
+      <button onClick={agregarCotizacion}>Agregar Cotización</button>
+      <ul>
+        {cotizaciones.map(cotizacion => (
+          <li key={cotizacion._id}>
+            {cotizacion.empresa} - ${cotizacion.precio} 
+            <button onClick={() => eliminar(cotizacion._id)}>Eliminar</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
 
-export default Empresas;
+export default Cotizaciones;

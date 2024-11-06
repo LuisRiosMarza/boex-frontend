@@ -2,14 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import { List, ListItem, ListItemText } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { obtenerCotizaciones } from '../services/cotizacionesService';
+import { obtenerEmpresas } from '../services/empresasService';
 
 const Sidebar = () => {
   const [empresas, setEmpresas] = useState([]);
 
   useEffect(() => {
     const fetchEmpresas = async () => {
-      const cotizaciones = await obtenerCotizaciones();
+      const cotizaciones = await obtenerEmpresas();
       const nombresEmpresas = Array.from(new Set(cotizaciones.map((item) => item.empresa)));
       setEmpresas(nombresEmpresas);
     };

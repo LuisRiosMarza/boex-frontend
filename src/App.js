@@ -2,7 +2,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
-import CotizacionForm from './components/CotizacionForm';
+import CotizacionForm from './components/EmpresasForm';
 import CotizacionEmpresa from './components/CotizacionEmpresa';
 import Navbar from './components/Navbar';
 import Empresas from './components/Empresas';

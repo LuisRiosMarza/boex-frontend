@@ -1,7 +1,7 @@
 // src/components/CotizacionEmpresa.js
 import React, { useEffect, useState } from 'react';
 import { Typography, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { obtenerCotizacionesPorEmpresa } from '../services/cotizacionesService';
+import { obtenerEmpresasPorCodigo } from '../services/empresasService';
 import GraficoCotizacionHora from './GraficoCotizacionHora';
 import { useParams } from 'react-router-dom'; // Importar useParams
 
@@ -14,7 +14,7 @@ const CotizacionEmpresa = () => {
   useEffect(() => {
     const fetchCotizaciones = async () => {
       try {
-        const data = await obtenerCotizacionesPorEmpresa(empresa);
+        const data = await obtenerEmpresasPorCodigo(empresa);
         setCotizaciones(data);
       } catch (error) {
         setError("No se pudieron obtener las cotizaciones.");
