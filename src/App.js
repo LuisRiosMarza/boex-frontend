@@ -18,6 +18,7 @@ const App = () => {
             <Route path="/" element={<CotizacionForm />} /> {/* Ruta principal */}
             <Route path="/empresas" element={<EmpresasTarjetas />} /> {/* Nueva ruta para empresas */}
             <Route path="/:empresa" element={<CotizacionEmpresa />} /> {/* Ruta dinámica para empresas */}
+            <Route path="/:bolsa" element={<BolsasEmpresas />} /> {/* Ruta dinámica para bolsas */}
           </Routes>
         </div>
       </div>

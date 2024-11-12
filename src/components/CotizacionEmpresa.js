@@ -1,20 +1,21 @@
 // src/components/CotizacionEmpresa.js
 import React, { useEffect, useState } from 'react';
-import { Typography, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { obtenerEmpresasPorCodigo } from '../services/empresasService';
+import { Typography, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, MenuItem, Select } from '@mui/material';
+import { obtenerCotizacionesPorEmpresa } from '../services/cotizacionesService';
 import GraficoCotizacionHora from './GraficoCotizacionHora';
-import { useParams } from 'react-router-dom'; // Importar useParams
+import { useParams } from 'react-router-dom';
 
 const CotizacionEmpresa = () => {
-  const { empresa } = useParams(); // Obtener el parámetro 'empresa' de la URL
+  const { empresa } = useParams();
   const [cotizaciones, setCotizaciones] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
+  const [filtro, setFiltro] = useState("dia");
 
   useEffect(() => {
     const fetchCotizaciones = async () => {
       try {
-        const data = await obtenerEmpresasPorCodigo(empresa);
+        const data = await obtenerCotizacionesPorEmpresa(empresa);
         setCotizaciones(data);
       } catch (error) {
         setError("No se pudieron obtener las cotizaciones.");
@@ -26,14 +27,31 @@ const CotizacionEmpresa = () => {
     fetchCotizaciones();
   }, [empresa]);
 
-  if (cargando) return <CircularProgress />;
-  if (error) return <Typography color="error">{error}</Typography>;
+  const handleFiltroChange = (event) => {
+    setFiltro(event.target.value);
+  };
+
+  if (cargando) {
+    return <CircularProgress />;
+  }
+
+  if (error) {
+    return <Typography color="error">{error}</Typography>;
+  }
 
   return (
     <div>
-      {/* Gráfico de Cotización por Hora */}
-      <h1>Cotización de Acciones por Hora</h1>
-      <GraficoCotizacionHora datosCotizaciones={cotizaciones} />
+      <h1>
+        Cotización de Acciones
+        {/* Selector para el tipo de gráfico */}
+        <Select value={filtro} onChange={handleFiltroChange}>
+          <MenuItem value="dia">Día</MenuItem>
+          <MenuItem value="mes">Mes</MenuItem>
+        </Select>
+      </h1>
+
+      {/* Gráfico de Cotización por Día o Mes */}
+      <GraficoCotizacionHora datosCotizaciones={cotizaciones} filtro={filtro} />
 
       <Typography variant="h4" gutterBottom>
         Cotizaciones de {empresa}
@@ -50,9 +68,9 @@ const CotizacionEmpresa = () => {
           </TableHead>
           <TableBody>
             {cotizaciones.map((cotizacion) => (
-              <TableRow key={cotizacion.fecha}>
-                <TableCell>{new Date(cotizacion.fecha).toLocaleString()}</TableCell>
-                <TableCell>{cotizacion.precio}</TableCell>
+              <TableRow key={cotizacion.fecha + "T" + cotizacion.hora}>
+                <TableCell>{new Date(cotizacion.fecha.split('T')[0] + "T" + cotizacion.hora).toLocaleString()}</TableCell>
+                <TableCell>{cotizacion.cotization}</TableCell>
               </TableRow>
             ))}
           </TableBody>

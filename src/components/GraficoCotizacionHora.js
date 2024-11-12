@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { createChart } from 'lightweight-charts';
 
-const GraficoCotizacionDia = ({ datosCotizaciones }) => {
+const GraficoCotizacionDia = ({ datosCotizaciones, filtro }) => {
   const chartRef = useRef();
 
   useEffect(() => {
@@ -16,50 +16,66 @@ const GraficoCotizacionDia = ({ datosCotizaciones }) => {
       crossHairMarkerVisible: true,
     });
 
-    // Obtener la fecha de hoy sin horas, minutos y segundos
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-    
-    // Crear un nuevo objeto de fecha para el final del día
-    const finDelDia = new Date(hoy);
-    finDelDia.setHours(23, 59, 59, 999);
-
-    // Filtrar las cotizaciones para solo incluir las de hoy
-    const datosHoy = datosCotizaciones.filter(cotizacion => {
-      const fechaCotizacion = new Date(cotizacion.fecha);
-      // Debug: Mostrar las fechas
-      console.log(`Filtrando cotización: ${cotizacion.fecha} - ${fechaCotizacion}`);
-      return fechaCotizacion >= hoy && fechaCotizacion <= finDelDia;
+    chart.timeScale().applyOptions({
+      borderColor: '#71649C',
+      timeVisible: true,
+      rightOffset: 20,
+      barSpacing: 10,
+      minBarSpacing: 0,
+      fixLeftEdge: true,
     });
 
-    // Verificar los datos filtrados
-    console.log('Datos filtrados de hoy:', datosHoy);
+    const aperturaUTC = new Date();
+    aperturaUTC.setHours(6, 0, 0, 0); // 06:00 UTC //En realidad abre 6:30, pero redondeo a las 6:00 UTC
+    const cierreUTC = new Date();
+    cierreUTC.setHours(16, 0, 0, 0); // 16:00 UTC
 
-    // Convertir los datos a un formato que Lightweight Charts pueda utilizar
-    const data = datosHoy.map(cotizacion => {
-      const date = new Date(cotizacion.fecha);
-      return {
-        time: Math.floor(date.getTime() / 1000), // Convertir a timestamp en segundos
-        value: cotizacion.precio,
-      };
-    });
+    let datosFiltrados;
 
-    // Verificar la conversión de datos
-    console.log('Datos convertidos para el gráfico:', data);
+    if (filtro === "dia") {
+      datosFiltrados = datosCotizaciones.filter(cotizacion => {
+        const fechaCotizacion = new Date(cotizacion.fecha.split('T')[0] + "T" + cotizacion.hora);
+        return fechaCotizacion >= aperturaUTC && fechaCotizacion <= cierreUTC;
+      }).map(cotizacion => ({
+        //fecha: cotizacion.fecha.split('T')[0] + "T" + cotizacion.hora, Controlo que filtra los datos entre 6 y 16
+        time: Math.floor(new Date(cotizacion.fecha.split('T')[0] + "T" + cotizacion.hora).getTime() / 1000),
+        value: cotizacion.cotization,
+      }));
+    }
+    else if (filtro === "mes") {
+      const mesActual = new Date().getMonth();
 
-    // Filtrar duplicados y ordenar por tiempo ascendente
-    const uniqueData = Array.from(new Map(data.map(item => [item.time, item])).values());
-    const orderedData = uniqueData.sort((a, b) => a.time - b.time);
+      const cotizacionesMes = datosCotizaciones.filter(cotizacion => {
+        const fechaCotizacion = new Date(cotizacion.fecha);
+        return fechaCotizacion.getMonth() === mesActual;
+      });
 
-    // Verificar los datos finales
-    console.log('Datos únicos y ordenados:', orderedData);
+      // Agrupar cotizaciones por día y calcular el promedio
+      const cotizacionesPorDia = cotizacionesMes.reduce((acumulador, cotizacion) => {
+        const fecha = cotizacion.fecha.split('T')[0]; // Obtener sólo la fecha
+        if (!acumulador[fecha]) {
+          acumulador[fecha] = { total: 0, count: 0 };
+        }
+        acumulador[fecha].total += cotizacion.cotization;
+        acumulador[fecha].count += 1;
+        return acumulador;
+      }, {});
 
-    // Actualizar la serie con los datos
+      // Calcular el promedio diario
+      datosFiltrados = Object.keys(cotizacionesPorDia).map(fecha => {
+        const promedio = cotizacionesPorDia[fecha].total / cotizacionesPorDia[fecha].count;
+        return {
+          time: Math.floor(new Date(fecha).getTime() / 1000), // Convertir a timestamp en segundos
+          value: promedio,
+        };
+      });
+    }
+    console.log(datosFiltrados)
+    const orderedData = datosFiltrados.sort((a, b) => a.time - b.time);
     lineSeries.setData(orderedData);
 
-    // Limpiar el chart al desmontar el componente
     return () => chart.remove();
-  }, [datosCotizaciones]);
+  }, [datosCotizaciones, filtro]);
 
   return (
     <div ref={chartRef} style={{ position: 'relative', width: '100%', height: '300px' }} />
