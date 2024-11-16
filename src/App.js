@@ -6,6 +6,7 @@ import CotizacionForm from './components/EmpresasForm';
 import CotizacionEmpresa from './components/CotizacionEmpresa';
 import Navbar from './components/Navbar';
 import EmpresasTarjetas from './components/EmpresasTarjetas';
+import IndicesTarjetas from './components/IndicesTarjetas';
 
 const App = () => {
   return (
@@ -18,7 +19,7 @@ const App = () => {
             <Route path="/" element={<CotizacionForm />} /> {/* Ruta principal */}
             <Route path="/empresas" element={<EmpresasTarjetas />} /> {/* Nueva ruta para empresas */}
             <Route path="/:empresa" element={<CotizacionEmpresa />} /> {/* Ruta dinámica para empresas */}
-            <Route path="/:bolsa" element={<BolsasEmpresas />} /> {/* Ruta dinámica para bolsas */}
+            <Route path="/indices" element={<IndicesTarjetas />} /> {/* Ruta dinámica para bolsas */}
           </Routes>
         </div>
       </div>

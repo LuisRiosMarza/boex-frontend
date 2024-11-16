@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseUrl = 'http://localhost:5000/api/cotizaciones'; // Asegúrate de usar la ruta correcta
+const baseUrl = 'http://localhost:5000/api/cotizaciones';
 
 // Función para obtener cotizaciones por código de empresa
 export const obtenerCotizacionesPorEmpresa = async (codempresa) => {
