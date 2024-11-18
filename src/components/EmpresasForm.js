@@ -7,7 +7,7 @@ const EmpresaForm = () => {
   const [codempresa, setCodempresa] = useState('');
   const [empresaNombre, setEmpresaNombre] = useState('');
   const [id, setId] = useState('');
-  const [cotizacionInicial, setCotizacionInicial] = useState('');
+  const [cotizationInicial, setCotizacionInicial] = useState('');
   const [cantidadAcciones, setCantidadAcciones] = useState('');
 
   const agregarEmpresa = async () => {
@@ -15,7 +15,7 @@ const EmpresaForm = () => {
       codempresa, 
       empresaNombre, 
       id: parseInt(id),  // Asegúrate de convertir a número
-      cotizacionInicial: parseFloat(cotizacionInicial),  // Asegúrate de convertir a número
+      cotizationInicial: parseFloat(cotizationInicial),  // Asegúrate de convertir a número
       cantidadAcciones: parseInt(cantidadAcciones)  // Asegúrate de convertir a número
     };
 
@@ -68,7 +68,7 @@ const EmpresaForm = () => {
         label="Cotización Inicial"
         type="number"
         variant="outlined"
-        value={cotizacionInicial}
+        value={cotizationInicial}
         onChange={(e) => setCotizacionInicial(e.target.value)}
         fullWidth
         margin="normal"

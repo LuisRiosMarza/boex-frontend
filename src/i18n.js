@@ -11,7 +11,7 @@ i18next
                 translation: {
                     inicio: "Inicio",
                     empresas: "Empresas",
-                    cotizaciones: "Cotizaciones",
+                    participaciones: "Participaciones",
                     indices: "Índices",
                     cotizacionAcciones: "Cotización de Acciones",
                     cotizacionesDe: "Cotizaciones de",
@@ -26,7 +26,7 @@ i18next
                 translation: {
                     inicio: "Начинать",
                     empresas: "Компании",
-                    cotizaciones: "Котировки",
+                    participaciones: "акции",
                     indices: "Индексы",
                     cotizacionAcciones: "Котировка акций",
                     cotizacionesDe: "Котировки для",

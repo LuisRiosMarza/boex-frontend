@@ -70,7 +70,7 @@ const GraficoCotizacionDia = ({ datosCotizaciones, filtro }) => {
         };
       });
     }
-    console.log(datosFiltrados)
+    //console.log(datosFiltrados)
     const orderedData = datosFiltrados.sort((a, b) => a.time - b.time);
     lineSeries.setData(orderedData);
 

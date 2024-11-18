@@ -46,8 +46,8 @@ const Navbar = () => {
         <Button color="inherit" component={Link} to="/empresas">
           {i18next.t('empresas')}
         </Button>
-        <Button color="inherit" component={Link} to="/cotizaciones">
-          {i18next.t('cotizaciones')}
+        <Button color="inherit" component={Link} to="/participaciones">
+          {i18next.t('participaciones')}
         </Button>
         <Button color="inherit" component={Link} to="/indices">
           {i18next.t('indices')}

@@ -39,7 +39,7 @@ const CotizacionEmpresa = () => {
         const data = await obtenerCotizacionesPorEmpresa(empresa);
         setCotizaciones(data);
       } catch (error) {
-        setError(i18next.t('errorCotizaciones'));
+        setError('Error al obtener las cotizaciones');
       } finally {
         setCargando(false);
       }
@@ -60,6 +60,13 @@ const CotizacionEmpresa = () => {
     return <Typography color="error">{error}</Typography>;
   }
 
+  // Determinar multiplicador basado en el idioma en localStorage
+  let multiplicador = 1; // Valor predeterminado
+  if (idioma === 'ru') {
+    multiplicador = 98;
+  }
+
+
   return (
     <div>
       <h1>
@@ -72,13 +79,16 @@ const CotizacionEmpresa = () => {
       </h1>
 
       {/* Gráfico de Cotización por Día o Mes */}
-      <GraficoCotizacionHora datosCotizaciones={cotizaciones} filtro={filtro} />
+      <GraficoCotizacionHora datosCotizaciones={cotizaciones.map(c => ({
+        ...c,
+        cotization: c.cotization * multiplicador,
+      }))} filtro={filtro} />
 
       <Typography variant="h4" gutterBottom>
         {i18next.t('cotizacionesDe')} {empresa}
       </Typography>
 
-      {/* Tabla de Cotizaciones */}
+      {/* Tabla de Cotizaciones 
       <TableContainer>
         <Table>
           <TableHead>
@@ -96,7 +106,7 @@ const CotizacionEmpresa = () => {
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
+      </TableContainer>*/}
     </div>
   );
 };

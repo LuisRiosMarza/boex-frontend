@@ -41,7 +41,7 @@ const EmpresasTarjetas = () => {
         >
           <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>{empresa.empresaNombre}</div>
           <div style={{ fontSize: '14px', color: '#666' }}>Código: {empresa.codempresa}</div>
-          <div style={{ fontSize: '14px', color: '#666' }}>Cotización Inicial: ${empresa.cotizacionInicial}</div>
+          <div style={{ fontSize: '14px', color: '#666' }}>Cotización Inicial: ${empresa.cotizationInicial}</div>
           <div style={{ fontSize: '14px', color: '#666' }}>Acciones: {empresa.cantidadAcciones}</div>
         </div>
       ))}
