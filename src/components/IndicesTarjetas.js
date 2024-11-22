@@ -20,7 +20,7 @@ const IndicesTarjetas = () => {
   }, []);
 
   const handleCardClick = (code) => {
-    navigate(`/${code}`);
+    navigate(`/indicesCotizaciones/${code}`);
   };
 
   return (
@@ -28,7 +28,7 @@ const IndicesTarjetas = () => {
       {Indices.map((indice) => (
         <div
           key={indice._id}
-          onClick={() => handleCardClick(indice.codindice)}
+          onClick={() => handleCardClick(indice.code)}
           style={{
             border: '1px solid #ddd',
             borderRadius: '8px',

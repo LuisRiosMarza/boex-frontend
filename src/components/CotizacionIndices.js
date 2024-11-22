@@ -1,52 +1,51 @@
-// src/components/CotizacionEmpresa.js
 import React, { useEffect, useState } from 'react';
 import { Typography, CircularProgress, MenuItem, Select } from '@mui/material';
-import { obtenerCotizacionesPorEmpresa } from '../services/cotizacionesService';
-import GraficoCotizacionHora from './GraficoCotizacionHora';
+import { obtenerCotizacionesPorCodigoIndice } from '../services/indicesCotizacionesService';
+import GraficoCotizacionHora from './GraficoCotizacionHora'; // reutilizo este componente
 import { useParams } from 'react-router-dom';
 import i18next from 'i18next';
 
-const CotizacionEmpresa = () => {
-  const { empresa } = useParams();
+const CotizacionIndice = () => {
+  const { codigoIndice } = useParams(); // Parámetro del índice
   const [cotizaciones, setCotizaciones] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [filtro, setFiltro] = useState("dia");
-  const [idioma, setIdioma] = useState(i18next.language); // Estado para rastrear el idioma actual
+  const [idioma, setIdioma] = useState(i18next.language);
 
-  // Configurar el idioma inicial desde localStorage
+  // Configurar idioma inicial y manejar cambios
   useEffect(() => {
-    const idiomaGuardado = localStorage.getItem('idioma') || 'es'; // 'es' por defecto
+    const idiomaGuardado = localStorage.getItem('idioma') || 'es';
     i18next.changeLanguage(idiomaGuardado);
     setIdioma(idiomaGuardado);
 
-    // Escuchar cambios de idioma
     const handleLanguageChange = (nuevoIdioma) => {
       setIdioma(nuevoIdioma);
     };
 
     i18next.on('languageChanged', handleLanguageChange);
 
-    // Limpiar el listener al desmontar el componente
     return () => {
       i18next.off('languageChanged', handleLanguageChange);
     };
   }, []);
 
+  // Obtener cotizaciones del índice
   useEffect(() => {
     const fetchCotizaciones = async () => {
+      console.log(codigoIndice);
       try {
-        const data = await obtenerCotizacionesPorEmpresa(empresa);
+        const data = await obtenerCotizacionesPorCodigoIndice(codigoIndice);
         setCotizaciones(data);
       } catch (error) {
-        setError('Error al obtener las cotizaciones');
+        setError('Error al obtener las cotizaciones del índice');
       } finally {
         setCargando(false);
       }
     };
 
     fetchCotizaciones();
-  }, [empresa]);
+  }, [codigoIndice]);
 
   const handleFiltroChange = (event) => {
     setFiltro(event.target.value);
@@ -60,35 +59,33 @@ const CotizacionEmpresa = () => {
     return <Typography color="error">{error}</Typography>;
   }
 
-  // Determinar multiplicador basado en el idioma en localStorage
-  let multiplicador = 1; // Valor predeterminado
+  // Determinar multiplicador según el idioma
+  let multiplicador = 1;
   if (idioma === 'ru') {
     multiplicador = 98;
   }
 
-
   return (
     <div>
       <h1>
-        {i18next.t('cotizacionAcciones')}
-        {/* Selector para el tipo de gráfico */}
+        {i18next.t('cotizacionIndices')}
         <Select value={filtro} onChange={handleFiltroChange}>
           <MenuItem value="dia">{i18next.t('dia')}</MenuItem>
           <MenuItem value="mes">{i18next.t('mes')}</MenuItem>
         </Select>
       </h1>
 
-      {/* Gráfico de Cotización por Día o Mes */}
+      {/* Gráfico para las cotizaciones del índice */}
       <GraficoCotizacionHora datosCotizaciones={cotizaciones.map(c => ({
         ...c,
-        cotization: c.cotization * multiplicador,
+        valorIndice: c.valorIndice * multiplicador,
       }))} filtro={filtro} />
 
       <Typography variant="h4" gutterBottom>
-        {i18next.t('cotizacionesDe')} {empresa}
+        {i18next.t('cotizacionesDe')} {codigoIndice}
       </Typography>
     </div>
   );
 };
 
-export default CotizacionEmpresa;
+export default CotizacionIndice;

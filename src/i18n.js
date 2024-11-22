@@ -19,7 +19,8 @@ i18next
                     mes: "Mes",
                     fecha: "Fecha",
                     cotizacion: "Cotización",
-                    agregarEmpresa: "Agregar Empresa"
+                    agregarEmpresa: "Agregar Empresa",
+                    cotizacionIndices: "Cotizacion de Indices"
                 },
             },
             ru: {
@@ -34,7 +35,8 @@ i18next
                     mes: "Месяц",
                     fecha: "Дата",
                     cotizacion: "Котировка",
-                    agregarEmpresa: "Добавить компанию"
+                    agregarEmpresa: "Добавить компанию",
+                    cotizacionIndices: "Котировки индексов"
                 },
             },
         }
