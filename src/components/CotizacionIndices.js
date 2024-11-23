@@ -78,7 +78,7 @@ const CotizacionIndice = () => {
       {/* Gráfico para las cotizaciones del índice */}
       <GraficoCotizacionHora datosCotizaciones={cotizaciones.map(c => ({
         ...c,
-        valorIndice: c.valorIndice * multiplicador,
+        cotization: c.valorIndice * multiplicador,
       }))} filtro={filtro} />
 
       <Typography variant="h4" gutterBottom>
