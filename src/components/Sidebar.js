@@ -36,7 +36,7 @@ const Sidebar = () => {
   }, []);
 
   return (
-    <div style={{ width: 240, position: 'fixed', top: 64, left: 0, height: '100%', backgroundColor: '#f4f4f4' }}>
+    <div style={{ width: 240, position: 'fixed', top: 96, left: 0, height: '100%', backgroundColor: '#f4f4f4' }}>
       <List>
         {empresas.map((empresa) => (
           <ListItem button component={Link} to={`/${empresa.codempresa}`} key={empresa._id}>

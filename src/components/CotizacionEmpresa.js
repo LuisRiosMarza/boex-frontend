@@ -1,6 +1,5 @@
-// src/components/CotizacionEmpresa.js
 import React, { useEffect, useState } from 'react';
-import { Typography, CircularProgress, MenuItem, Select } from '@mui/material';
+import { Typography, CircularProgress, MenuItem, Select, Box, Alert, Container } from '@mui/material';
 import { obtenerCotizacionesPorEmpresa } from '../services/cotizacionesService';
 import GraficoCotizacionHora from './GraficoCotizacionHora';
 import { useParams } from 'react-router-dom';
@@ -12,22 +11,20 @@ const CotizacionEmpresa = () => {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [filtro, setFiltro] = useState("dia");
-  const [idioma, setIdioma] = useState(i18next.language); // Estado para rastrear el idioma actual
+  const [idioma, setIdioma] = useState(i18next.language);
 
   // Configurar el idioma inicial desde localStorage
   useEffect(() => {
-    const idiomaGuardado = localStorage.getItem('idioma') || 'es'; // 'es' por defecto
+    const idiomaGuardado = localStorage.getItem('idioma') || 'es';
     i18next.changeLanguage(idiomaGuardado);
     setIdioma(idiomaGuardado);
 
-    // Escuchar cambios de idioma
     const handleLanguageChange = (nuevoIdioma) => {
       setIdioma(nuevoIdioma);
     };
 
     i18next.on('languageChanged', handleLanguageChange);
 
-    // Limpiar el listener al desmontar el componente
     return () => {
       i18next.off('languageChanged', handleLanguageChange);
     };
@@ -53,38 +50,94 @@ const CotizacionEmpresa = () => {
   };
 
   if (cargando) {
-    return <CircularProgress />;
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (error) {
-    return <Typography color="error">{error}</Typography>;
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          textAlign: 'center',
+        }}
+      >
+        <Alert
+          severity="error"
+          sx={{
+            width: '100%',
+            maxWidth: '600px',
+            textAlign: 'center',
+          }}
+        >
+          <strong>{error}</strong>
+        </Alert>
+      </Box>
+    );
   }
 
-  // Determinar multiplicador basado en el idioma en localStorage
-  let multiplicador = 1; // Valor predeterminado
+  let multiplicador = 1;
   if (idioma === 'ru') {
     multiplicador = 98;
   }
 
-
   return (
     <div>
-      <h1>
-        {i18next.t('cotizacionAcciones')}
-        {/* Selector para el tipo de gráfico */}
-        <Select value={filtro} onChange={handleFiltroChange}>
+      {/* Encabezado */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          my: 4,
+        }}
+      >
+        <Typography variant="h3" component="h1" gutterBottom>
+          {i18next.t('cotizacionAcciones')}
+        </Typography>
+        <Select
+          value={filtro}
+          onChange={handleFiltroChange}
+          variant="outlined"
+          sx={{ width: '200px' }}
+        >
           <MenuItem value="dia">{i18next.t('dia')}</MenuItem>
           <MenuItem value="mes">{i18next.t('mes')}</MenuItem>
         </Select>
-      </h1>
+      </Box>
 
-      {/* Gráfico de Cotización por Día o Mes */}
-      <GraficoCotizacionHora datosCotizaciones={cotizaciones.map(c => ({
-        ...c,
-        cotization: c.cotization * multiplicador,
-      }))} filtro={filtro} />
+      {/* Gráfico para las cotizaciones del índice */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+        <GraficoCotizacionHora
+          datosCotizaciones={cotizaciones.map(c => ({
+            ...c,
+            cotization: c.cotization * multiplicador,
+          }))}
+          filtro={filtro}
+          esIndice={false}
+          indicesDisponibles={[]}
+        />
+      </Box>
 
-      <Typography variant="h4" gutterBottom>
+
+      {/* Información adicional */}
+      <Typography
+        variant="h5"
+        sx={{ textAlign: 'center', color: 'text.secondary', mb: 4 }}
+      >
         {i18next.t('cotizacionesDe')} {empresa}
       </Typography>
     </div>

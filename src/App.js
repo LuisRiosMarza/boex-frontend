@@ -17,14 +17,14 @@ const App = () => {
       <Navbar />
       <div style={{ display: 'flex' }}>
         <Sidebar />
-        <div style={{ marginLeft: 240, marginTop: 64, padding: 20, flexGrow: 1 }}>
+        <div style={{ marginLeft: 240, marginTop: 96, padding: 20, flexGrow: 1 }}>
           <Routes>
             <Route path="/" element={<CotizacionForm />} /> {/* Ruta principal */}
             <Route path="/empresas" element={<EmpresasTarjetas />} /> {/* Nueva ruta para empresas */}
             <Route path="/:empresa" element={<CotizacionEmpresa />} /> {/* Ruta dinámica para empresas */}
             <Route path="/indices" element={<IndicesTarjetas />} /> {/* Ruta dinámica para bolsas */}
             <Route path="/participaciones" element={<Participaciones />} /> {/* Ruta dinámica para bolsas */}
-            <Route path="/indicesCotizaciones/:codigoIndice" element={<CotizacionIndice />} /> {/* Ruta dinámica para empresas */}
+            <Route path="/indicesCotizaciones/:code" element={<CotizacionIndice />} /> {/* Ruta dinámica para empresas */}
           </Routes>
         </div>
       </div>

@@ -20,7 +20,8 @@ i18next
                     fecha: "Fecha",
                     cotizacion: "Cotización",
                     agregarEmpresa: "Agregar Empresa",
-                    cotizacionIndices: "Cotizacion de Indices"
+                    cotizacionIndices: "Cotizacion de Indices",
+                    ordenarPor: "Ordenar por"
                 },
             },
             ru: {
@@ -36,7 +37,8 @@ i18next
                     fecha: "Дата",
                     cotizacion: "Котировка",
                     agregarEmpresa: "Добавить компанию",
-                    cotizacionIndices: "Котировки индексов"
+                    cotizacionIndices: "Котировки индексов",
+                    ordenarPor: "Сортировать по"
                 },
             },
         }

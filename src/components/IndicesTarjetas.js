@@ -24,7 +24,7 @@ const IndicesTarjetas = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', padding: '20px', marginLeft: '240px', marginTop: '64px' }}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', padding: '20px', marginLeft: '240px', marginTop: '96px' }}>
       {Indices.map((indice) => (
         <div
           key={indice._id}

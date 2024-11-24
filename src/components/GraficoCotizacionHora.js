@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createChart } from 'lightweight-charts';
 import { DateTime } from 'luxon';
 
-const GraficoCotizacionDia = ({ datosCotizaciones, filtro }) => {
+const GraficoCotizacionHora = ({ datosCotizaciones, segundoIndiceDatos, filtro }) => {
   const chartRef = useRef();
   const [idioma, setIdioma] = useState(localStorage.getItem('idioma') || ''); // Cargar idioma desde localStorage
 
@@ -41,7 +41,7 @@ const GraficoCotizacionDia = ({ datosCotizaciones, filtro }) => {
     // Obtener el idioma desde localStorage y actualizar el estado
     const idiomaGuardado = localStorage.getItem('idioma') || 'es'; // Si no hay idioma, usar 'es' como predeterminado
     setIdioma(idiomaGuardado);
-    console.log(idiomaGuardado);
+    //console.log(idiomaGuardado);
 
     const chart = createChart(chartRef.current, {
       layout: {
@@ -56,9 +56,21 @@ const GraficoCotizacionDia = ({ datosCotizaciones, filtro }) => {
       height: chartRef.current.clientHeight,
     });
 
-    const lineSeries = chart.addLineSeries({
+    // Crear la serie principal
+    const mainSeries = chart.addLineSeries({
+      color: "#eb4034",
       lineWidth: 2,
     });
+
+    // Crear la segunda serie si hay datos para el segundo índice
+    let secondSeries;
+    if (segundoIndiceDatos && segundoIndiceDatos.length > 0) {
+      console.log(segundoIndiceDatos)
+      secondSeries = chart.addLineSeries({
+        color: "#34eb77", // Diferente color para distinguir la segunda línea
+        lineWidth: 2,
+      });
+    }
 
     chart.timeScale().applyOptions({
       borderColor: '#71649C',
@@ -74,61 +86,76 @@ const GraficoCotizacionDia = ({ datosCotizaciones, filtro }) => {
     const cierreUTC = new Date();
     cierreUTC.setHours(16, 0, 0, 0); // 16:00 UTC
 
-    let datosFiltrados;
+    // Función para procesar los datos según el filtro seleccionado
+    const procesarDatos = (datos) => {
+      let datosFiltrados;
+      if (filtro === "dia") {
+        datosFiltrados = datos
+          .filter(cotizacion => {
+            const fechaCotizacion = new Date(cotizacion.fecha.split('T')[0] + "T" + cotizacion.hora);
+            return fechaCotizacion >= aperturaUTC && fechaCotizacion <= cierreUTC;
+          })
+          .map(cotizacion => ({
+            fechaUTC: cotizacion.fecha.split('T')[0] + "T" + cotizacion.hora,
+            value: cotizacion.cotization,
+          }));
+        // Agregar fechas y tiempos en función del idioma seleccionado (Argentina o Rusia)
+        return agregarFechas(datosFiltrados, idioma);
+      }
+      if (filtro === "mes") {
+        const mesActual = new Date().getMonth();
+        const cotizacionesMes = datos.filter(cotizacion => {
+          const fechaCotizacion = new Date(cotizacion.fecha);
+          return fechaCotizacion.getMonth() === mesActual;
+        });
 
-    if (filtro === "dia") {
-      datosFiltrados = datosCotizaciones
-        .filter(cotizacion => {
-          const fechaCotizacion = new Date(cotizacion.fecha.split('T')[0] + "T" + cotizacion.hora);
-          return fechaCotizacion >= aperturaUTC && fechaCotizacion <= cierreUTC;
-        })
-        .map(cotizacion => ({
-          fechaUTC: cotizacion.fecha.split('T')[0] + "T" + cotizacion.hora,
-          //time: Math.floor(new Date(cotizacion.fecha.split('T')[0] + "T" + cotizacion.hora).getTime() / 1000),
-          value: cotizacion.cotization,
-        }));
+        // Agrupar cotizaciones por día y calcular el promedio
+        const cotizacionesPorDia = cotizacionesMes.reduce((acumulador, cotizacion) => {
+          const fecha = cotizacion.fecha.split('T')[0]; // Obtener sólo la fecha
+          if (!acumulador[fecha]) {
+            acumulador[fecha] = { total: 0, count: 0 };
+          }
+          acumulador[fecha].total += cotizacion.cotization;
+          acumulador[fecha].count += 1;
+          return acumulador;
+        }, {});
 
-      // Agregar fechas y tiempos en función del idioma seleccionado (Argentina o Rusia)
-      datosFiltrados = agregarFechas(datosFiltrados, idioma);
+        // Calcular el promedio diario
+        return Object.keys(cotizacionesPorDia).map(fecha => {
+          const promedio = cotizacionesPorDia[fecha].total / cotizacionesPorDia[fecha].count;
+          return {
+            time: Math.floor(new Date(fecha).getTime() / 1000), // Convertir a timestamp en segundos
+            value: promedio,
+          };
+        });
+      }
+    };
+
+    // Procesar y ordenar datos para la serie principal
+    const orderedData = procesarDatos(datosCotizaciones).sort((a, b) => a.time - b.time);
+    mainSeries.setData(orderedData);
+
+    // Procesar y ordenar datos para la segunda serie (si existe)
+    if (secondSeries) {
+      const secondData = procesarDatos(segundoIndiceDatos).sort((a, b) => a.time - b.time);
+      secondSeries.setData(secondData);
     }
-    else if (filtro === "mes") {
-      const mesActual = new Date().getMonth();
 
-      const cotizacionesMes = datosCotizaciones.filter(cotizacion => {
-        const fechaCotizacion = new Date(cotizacion.fecha);
-        return fechaCotizacion.getMonth() === mesActual;
-      });
-
-      // Agrupar cotizaciones por día y calcular el promedio
-      const cotizacionesPorDia = cotizacionesMes.reduce((acumulador, cotizacion) => {
-        const fecha = cotizacion.fecha.split('T')[0]; // Obtener sólo la fecha
-        if (!acumulador[fecha]) {
-          acumulador[fecha] = { total: 0, count: 0 };
-        }
-        acumulador[fecha].total += cotizacion.cotization;
-        acumulador[fecha].count += 1;
-        return acumulador;
-      }, {});
-
-      // Calcular el promedio diario
-      datosFiltrados = Object.keys(cotizacionesPorDia).map(fecha => {
-        const promedio = cotizacionesPorDia[fecha].total / cotizacionesPorDia[fecha].count;
-        return {
-          time: Math.floor(new Date(fecha).getTime() / 1000), // Convertir a timestamp en segundos
-          value: promedio,
-        };
-      });
-    }
-    console.log(datosFiltrados);
-    const orderedData = datosFiltrados.sort((a, b) => a.time - b.time);
-    lineSeries.setData(orderedData);
-
+    // Eliminar el gráfico al desmontar el componente
     return () => chart.remove();
-  }, [datosCotizaciones, filtro, idioma]);
+  }, [datosCotizaciones, segundoIndiceDatos, filtro, idioma]);
 
   return (
-    <div ref={chartRef} style={{ position: 'relative', width: '100%', height: '300px' }} />
+    <div ref={chartRef} style={{
+      position: 'relative',
+      width: '100%',
+      height: '300px',
+      borderRadius: '8px',
+      overflow: 'hidden',
+      boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)',
+      background: '#1E1E2F',
+    }} />
   );
 };
 
-export default GraficoCotizacionDia;
+export default GraficoCotizacionHora;

@@ -48,9 +48,9 @@ export const eliminarCotizacionIndice = async (id) => {
 };
 
 // Obtener cotizaciones por código de índice
-export const obtenerCotizacionesPorCodigoIndice = async (codigoIndice) => {
+export const obtenerCotizacionesPorCodigoIndice = async (code) => {
   try {
-    const response = await axios.get(`${baseUrl}/${codigoIndice}`);
+    const response = await axios.get(`${baseUrl}/${code}`);
     return response.data;
   } catch (error) {
     console.error('Error al obtener cotizaciones por código de índice:', error);
