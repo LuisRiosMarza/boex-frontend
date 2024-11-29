@@ -97,7 +97,7 @@ const GraficoCotizacionHora = ({ datosCotizaciones, segundoIndiceDatos, filtro }
           })
           .map(cotizacion => ({
             fechaUTC: cotizacion.fecha.split('T')[0] + "T" + cotizacion.hora,
-            value: cotizacion.cotization,
+            value: (cotizacion.cotization || cotizacion.valorIndice),
           }));
         // Agregar fechas y tiempos en función del idioma seleccionado (Argentina o Rusia)
         return agregarFechas(datosFiltrados, idioma);
@@ -115,7 +115,7 @@ const GraficoCotizacionHora = ({ datosCotizaciones, segundoIndiceDatos, filtro }
           if (!acumulador[fecha]) {
             acumulador[fecha] = { total: 0, count: 0 };
           }
-          acumulador[fecha].total += cotizacion.cotization;
+          acumulador[fecha].total += (cotizacion.cotization || cotizacion.valorIndice);
           acumulador[fecha].count += 1;
           return acumulador;
         }, {});
