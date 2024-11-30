@@ -1,8 +1,9 @@
 // src/components/Navbar.js
 import React, { useEffect, useState } from 'react';
-import { AppBar, Toolbar, Typography, Button, Select, MenuItem, FormControl, InputLabel, Box } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Select, MenuItem, FormControl, InputLabel, Box, IconButton, Drawer, List, ListItem, ListItemText, useTheme, useMediaQuery } from '@mui/material';
 import { Link } from 'react-router-dom';
 import i18next from 'i18next';
+import MenuIcon from '@mui/icons-material/Menu';
 
 const Navbar = () => {
   // Idioma por defecto si no hay nada guardado
@@ -10,6 +11,9 @@ const Navbar = () => {
 
   // Estado para manejar el idioma actual
   const [idioma, setIdioma] = useState(idiomaPorDefecto);
+
+  // Estado para manejar la apertura del menú en mobile
+  const [menuAbierto, setMenuAbierto] = useState(false);
 
   useEffect(() => {
     // Cargar el idioma desde localStorage
@@ -31,8 +35,12 @@ const Navbar = () => {
     localStorage.setItem('idioma', nuevoIdioma); // Guardar el idioma en localStorage
   };
 
+  // Hook para manejar el tamaño de la pantalla (si es mobile)
+  const theme = useTheme();
+  const esMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
-    <AppBar position="fixed" sx={{ backgroundColor: 'black', padding: 2}}>
+    <AppBar position="fixed" sx={{ backgroundColor: 'black', padding: 2 }}>
       <Toolbar>
         {/* Contenedor de la imagen y el título */}
         <Box display="flex" alignItems="center" sx={{ flexGrow: 1 }}>
@@ -47,19 +55,28 @@ const Navbar = () => {
           </Typography>
         </Box>
 
-        {/* Botones de navegación */}
-        <Button color="inherit" component={Link} to="/">
-          {i18next.t('inicio')}
-        </Button>
-        <Button color="inherit" component={Link} to="/empresas">
-          {i18next.t('empresas')}
-        </Button>
-        <Button color="inherit" component={Link} to="/participaciones">
-          {i18next.t('participaciones')}
-        </Button>
-        <Button color="inherit" component={Link} to="/indices">
-          {i18next.t('indices')}
-        </Button>
+        {/* Si es mobile, mostrar el ícono de hamburguesa */}
+        {esMobile ? (
+          <IconButton color="inherit" onClick={() => setMenuAbierto(true)}>
+            <MenuIcon />
+          </IconButton>
+        ) : (
+          <>
+            {/* Botones de navegación en pantalla grande */}
+            <Button color="inherit" component={Link} to="/">
+              {i18next.t('inicio')}
+            </Button>
+            <Button color="inherit" component={Link} to="/empresas">
+              {i18next.t('empresas')}
+            </Button>
+            <Button color="inherit" component={Link} to="/participaciones">
+              {i18next.t('participaciones')}
+            </Button>
+            <Button color="inherit" component={Link} to="/indices">
+              {i18next.t('indices')}
+            </Button>
+          </>
+        )}
 
         {/* Selector de idioma */}
         <FormControl sx={{ minWidth: 120, marginLeft: '20px' }}>
@@ -83,6 +100,28 @@ const Navbar = () => {
           </Select>
         </FormControl>
       </Toolbar>
+
+      {/* Menú desplegable (hamburguesa) */}
+      <Drawer
+        anchor="left"
+        open={menuAbierto}
+        onClose={() => setMenuAbierto(false)}
+      >
+        <List>
+          <ListItem button component={Link} to="/" onClick={() => setMenuAbierto(false)}>
+            <ListItemText primary={i18next.t('inicio')} />
+          </ListItem>
+          <ListItem button component={Link} to="/empresas" onClick={() => setMenuAbierto(false)}>
+            <ListItemText primary={i18next.t('empresas')} />
+          </ListItem>
+          <ListItem button component={Link} to="/participaciones" onClick={() => setMenuAbierto(false)}>
+            <ListItemText primary={i18next.t('participaciones')} />
+          </ListItem>
+          <ListItem button component={Link} to="/indices" onClick={() => setMenuAbierto(false)}>
+            <ListItemText primary={i18next.t('indices')} />
+          </ListItem>
+        </List>
+      </Drawer>
     </AppBar>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, CircularProgress, MenuItem, Select, Box, Alert, Container } from '@mui/material';
+import { Typography, CircularProgress, MenuItem, Select, Box, Alert } from '@mui/material';
 import { obtenerCotizacionesPorEmpresa } from '../services/cotizacionesService';
 import GraficoCotizacionHora from './GraficoCotizacionHora';
 import { useParams } from 'react-router-dom';
@@ -95,52 +95,85 @@ const CotizacionEmpresa = () => {
   }
 
   return (
-    <div>
+    <Box
+      sx={{
+        px: { xs: 2, md: 4 }, // Espaciado horizontal responsivo
+        py: 4,
+        maxWidth: { xs: '100%', md: '80%' },
+        margin: '0 auto',
+      }}
+    >
       {/* Encabezado */}
       <Box
         sx={{
           display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
           justifyContent: 'space-between',
           alignItems: 'center',
-          my: 4,
+          mb: 4,
         }}
       >
-        <Typography variant="h3" component="h1" gutterBottom>
+        <Typography
+          variant="h3"
+          component="h1"
+          gutterBottom
+          sx={{
+            fontSize: { xs: '1.5rem', md: '2.5rem' }, // Tamaño de fuente responsivo
+            textAlign: { xs: 'center', md: 'left' },
+          }}
+        >
           {i18next.t('cotizacionAcciones')}
         </Typography>
         <Select
           value={filtro}
           onChange={handleFiltroChange}
           variant="outlined"
-          sx={{ width: '200px' }}
+          sx={{
+            width: { xs: '100%', md: '200px' }, // Tamaño responsivo
+            mt: { xs: 2, md: 0 },
+          }}
         >
           <MenuItem value="dia">{i18next.t('dia')}</MenuItem>
           <MenuItem value="mes">{i18next.t('mes')}</MenuItem>
         </Select>
       </Box>
 
-      {/* Gráfico para las cotizaciones del índice */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+      {/* Gráfico */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          mb: 4,
+        }}
+      >
         <GraficoCotizacionHora
-          datosCotizaciones={cotizaciones.map(c => ({
+          datosCotizaciones={cotizaciones.map((c) => ({
             ...c,
             cotization: c.cotization * multiplicador,
           }))}
           filtro={filtro}
           esIndice={false}
           indicesDisponibles={[]}
+          sx={{
+            width: { xs: '100%', md: '75%' }, // Ajuste de tamaño del gráfico
+            height: { xs: '300px', md: '500px' }, // Altura responsiva
+          }}
         />
       </Box>
-
 
       {/* Información adicional */}
       <Typography
         variant="h5"
-        sx={{ textAlign: 'center', color: 'text.secondary', mb: 4 }}
+        sx={{
+          textAlign: 'center',
+          color: 'text.secondary',
+          fontSize: { xs: '1rem', md: '1.25rem' }, // Tamaño de fuente responsivo
+          mb: 4,
+        }}
       >
         {i18next.t('cotizacionesDe')} {empresa}
       </Typography>
-    </div>
+    </Box>
   );
 };
 

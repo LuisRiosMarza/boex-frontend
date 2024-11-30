@@ -1,34 +1,53 @@
 // src/components/EmpresaForm.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Typography, TextField, Button } from '@mui/material';
-import { crearEmpresa } from '../services/empresasService'; // Importa el nuevo servicio
+import { crearEmpresa } from '../services/empresasService'; // Importa el servicio
+import i18next from 'i18next';
 
 const EmpresaForm = () => {
   const [codempresa, setCodempresa] = useState('');
   const [empresaNombre, setEmpresaNombre] = useState('');
   const [id, setId] = useState('');
-  const [cotizationInicial, setCotizacionInicial] = useState('');
+  const [cotizacionInicial, setCotizacionInicial] = useState('');
   const [cantidadAcciones, setCantidadAcciones] = useState('');
+  const [idioma, setIdioma] = useState(i18next.language); // Estado para el idioma
 
+  // Configurar idioma inicial y manejar cambios
+  useEffect(() => {
+    const idiomaGuardado = localStorage.getItem('idioma') || 'es';
+    i18next.changeLanguage(idiomaGuardado);
+    setIdioma(idiomaGuardado);
+
+    const handleLanguageChange = (nuevoIdioma) => {
+      setIdioma(nuevoIdioma);
+    };
+
+    i18next.on('languageChanged', handleLanguageChange);
+
+    return () => {
+      i18next.off('languageChanged', handleLanguageChange);
+    };
+  }, []);
+
+  // Función para agregar una nueva empresa
   const agregarEmpresa = async () => {
-    const nuevaEmpresa = { 
-      codempresa, 
-      empresaNombre, 
-      id: parseInt(id),  // Asegúrate de convertir a número
-      cotizationInicial: parseFloat(cotizationInicial),  // Asegúrate de convertir a número
-      cantidadAcciones: parseInt(cantidadAcciones)  // Asegúrate de convertir a número
+    const nuevaEmpresa = {
+      codempresa,
+      empresaNombre,
+      id: parseInt(id, 10), // Convertir a número
+      cotizacionInicial: parseFloat(cotizacionInicial), // Convertir a número
+      cantidadAcciones: parseInt(cantidadAcciones, 10), // Convertir a número
     };
 
     try {
       await crearEmpresa(nuevaEmpresa);
       console.log(nuevaEmpresa);
-      // Limpia los campos después de agregar
+      // Limpiar los campos después de agregar
       setCodempresa('');
       setEmpresaNombre('');
       setId('');
       setCotizacionInicial('');
       setCantidadAcciones('');
-      // Llama a la función para cargar empresas después de agregar, si es necesario
     } catch (error) {
       console.error("Error al agregar la empresa:", error);
     }
@@ -37,10 +56,10 @@ const EmpresaForm = () => {
   return (
     <Container>
       <Typography variant="h4" gutterBottom>
-        Agregar Empresa
+        {i18next.t('agregarEmpresa')}
       </Typography>
       <TextField
-        label="Código de Empresa"
+        label={i18next.t('codigoEmpresa')}
         variant="outlined"
         value={codempresa}
         onChange={(e) => setCodempresa(e.target.value)}
@@ -48,7 +67,7 @@ const EmpresaForm = () => {
         margin="normal"
       />
       <TextField
-        label="Nombre de la Empresa"
+        label={i18next.t('nombreEmpresa')}
         variant="outlined"
         value={empresaNombre}
         onChange={(e) => setEmpresaNombre(e.target.value)}
@@ -65,16 +84,16 @@ const EmpresaForm = () => {
         margin="normal"
       />
       <TextField
-        label="Cotización Inicial"
+        label={i18next.t('cotizacionInicial')}
         type="number"
         variant="outlined"
-        value={cotizationInicial}
+        value={cotizacionInicial}
         onChange={(e) => setCotizacionInicial(e.target.value)}
         fullWidth
         margin="normal"
       />
       <TextField
-        label="Cantidad de Acciones"
+        label={i18next.t('cantidadAcciones')}
         type="number"
         variant="outlined"
         value={cantidadAcciones}
@@ -82,13 +101,13 @@ const EmpresaForm = () => {
         fullWidth
         margin="normal"
       />
-      <Button 
-        variant="contained" 
-        color="primary" 
+      <Button
+        variant="contained"
+        color="primary"
         onClick={agregarEmpresa}
         style={{ marginTop: '16px' }}
       >
-        Agregar Empresa
+        {i18next.t('botonAgregar')}
       </Button>
     </Container>
   );

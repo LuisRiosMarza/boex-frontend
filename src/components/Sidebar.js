@@ -1,6 +1,6 @@
 // src/components/Sidebar.js
 import React, { useEffect, useState } from 'react';
-import { List, ListItem, ListItemText } from '@mui/material';
+import { List, ListItem, ListItemText, useTheme, useMediaQuery } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { obtenerEmpresas } from '../services/empresasService';
 import i18next from 'i18next';
@@ -35,6 +35,15 @@ const Sidebar = () => {
     };
   }, []);
 
+  // Hook para manejar el tamaño de la pantalla (si es mobile)
+  const theme = useTheme();
+  const esMobile = useMediaQuery(theme.breakpoints.down('xl'));
+
+  // Si es mobile, no renderizar el Sidebar
+  if (esMobile) {
+    return null;
+  }
+
   return (
     <div style={{ width: 240, position: 'fixed', top: 96, left: 0, height: '100%', backgroundColor: '#f4f4f4' }}>
       <List>
@@ -43,7 +52,7 @@ const Sidebar = () => {
             <ListItemText primary={empresa.empresaNombre} />
           </ListItem>
         ))}
-        <ListItem button component={Link} to="/">
+        <ListItem button component={Link} to="/agregarEmpresa">
           <ListItemText primary={textoAgregarEmpresa} />
         </ListItem>
       </List>

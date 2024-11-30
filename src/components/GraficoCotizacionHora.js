@@ -65,7 +65,7 @@ const GraficoCotizacionHora = ({ datosCotizaciones, segundoIndiceDatos, filtro }
     // Crear la segunda serie si hay datos para el segundo índice
     let secondSeries;
     if (segundoIndiceDatos && segundoIndiceDatos.length > 0) {
-      console.log(segundoIndiceDatos)
+      //console.log(segundoIndiceDatos)
       secondSeries = chart.addLineSeries({
         color: "#34eb77", // Diferente color para distinguir la segunda línea
         lineWidth: 2,

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import GraficoTorta from './GraficoTorta';
-import { CircularProgress, Typography, Box, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { CircularProgress, Typography, Box, MenuItem, Select, FormControl } from '@mui/material';
 import { obtenerEmpresas } from '../services/empresasService';
 import { obtenerCotizacionesPorEmpresa } from '../services/cotizacionesService';
+import i18next from 'i18next';
+import { useTheme, useMediaQuery } from '@mui/material';
 
 const Participaciones = () => {
     const [cargando, setCargando] = useState(true);
@@ -10,6 +12,27 @@ const Participaciones = () => {
     const [etiquetas, setEtiquetas] = useState([]);
     const [datos, setDatos] = useState([]);
     const [colores, setColores] = useState([]);
+    const [idioma, setIdioma] = useState(i18next.language); // Estado para controlar el idioma
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Comprobación para móvil
+
+    // Configurar idioma inicial y manejar cambios
+    useEffect(() => {
+        const idiomaGuardado = localStorage.getItem('idioma') || 'es';
+        i18next.changeLanguage(idiomaGuardado);
+        setIdioma(idiomaGuardado);
+
+        const handleLanguageChange = (nuevoIdioma) => {
+            setIdioma(nuevoIdioma); // Actualiza el estado del idioma
+        };
+
+        i18next.on('languageChanged', handleLanguageChange);
+
+        return () => {
+            i18next.off('languageChanged', handleLanguageChange); // Limpia el evento al desmontar
+        };
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -72,7 +95,7 @@ const Participaciones = () => {
         };
 
         fetchData();
-    }, [modo]);
+    }, [modo, idioma]); // Agregar 'idioma' como dependencia
 
     if (cargando) {
         return (
@@ -84,41 +107,43 @@ const Participaciones = () => {
 
     return (
         <Box>
-
-            {/* Contenedor para el selector alineado a la derecha */}
             <Box sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 my: 4,
+                textAlign: "center"
             }}>
-                {/* Título alineado a la izquierda */}
                 <Typography variant="h4" gutterBottom align="left">
-                    Participaciones por Empresa
+                    {i18next.t('participacionPorEmpresa')}
                 </Typography>
 
                 <FormControl fullWidth variant="outlined" sx={{ width: '150px' }}>
-                    <InputLabel>Modo</InputLabel>
                     <Select
                         value={modo}
                         onChange={(e) => setModo(e.target.value)}
-                        label="Modo"
                     >
-                        <MenuItem value="dia">Día</MenuItem>
-                        <MenuItem value="mes">Mes</MenuItem>
+                        <MenuItem value="dia">{i18next.t('dia')}</MenuItem>
+                        <MenuItem value="mes">{i18next.t('mes')}</MenuItem>
                     </Select>
                 </FormControl>
             </Box>
 
             {/* Gráfico achicado */}
-            <Box sx={{ maxWidth: '100%', height: '500px', marginBottom: 2, display: 'flex', justifyContent: 'center', mt: 2 }}>
+            <Box sx={{
+                maxWidth: '100%',
+                height: isMobile ? '300px' : '500px',
+                marginBottom: 2,
+                display: 'flex',
+                justifyContent: 'center',
+                mt: 2
+            }}>
                 <GraficoTorta datos={datos} etiquetas={etiquetas} colores={colores} />
             </Box>
 
-            {/* Descripción adicional debajo del gráfico */}
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
                 <Typography variant="body2" color="textSecondary">
-                    Datos de participación según el modo seleccionado (Día o Mes).
+                    {i18next.t('aclaracionParticipaciones')}
                 </Typography>
             </Box>
         </Box>

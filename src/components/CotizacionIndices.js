@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, CircularProgress, MenuItem, Select, Alert, Box } from '@mui/material';
+import { Typography, CircularProgress, MenuItem, Select, Alert, Box, useMediaQuery } from '@mui/material';
 import { obtenerCotizacionesPorCodigoIndice } from '../services/indicesCotizacionesService';
 import { obtenerIndices } from '../services/indicesService';
-import GraficoCotizacionHora from './GraficoCotizacionHora'; // reutilizo este componente
+import GraficoCotizacionHora from './GraficoCotizacionHora';
 import { useParams } from 'react-router-dom';
 import i18next from 'i18next';
 
 const CotizacionIndice = () => {
-  const { code } = useParams(); // Parámetro del índice
+  const { code } = useParams();
   const [cotizaciones, setCotizaciones] = useState([]);
-  const [cotizacionesComparadas, setCotizacionesComparadas] = useState([]); // Cotizaciones para el índice comparado
+  const [cotizacionesComparadas, setCotizacionesComparadas] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
-  const [filtro, setFiltro] = useState("dia");
+  const [filtro, setFiltro] = useState('dia');
   const [idioma, setIdioma] = useState(i18next.language);
   const [indicesDisponibles, setIndicesDisponibles] = useState([]);
-  const [indiceSeleccionado, setIndiceSeleccionado] = useState(""); // Estado para el índice seleccionado
+  const [indiceSeleccionado, setIndiceSeleccionado] = useState('');
 
-  // Configurar idioma inicial y manejar cambios
+  const esMobile = useMediaQuery('(max-width:600px)'); // Detectar pantallas pequeñas
+
   useEffect(() => {
     const idiomaGuardado = localStorage.getItem('idioma') || 'es';
     i18next.changeLanguage(idiomaGuardado);
@@ -34,7 +35,6 @@ const CotizacionIndice = () => {
     };
   }, []);
 
-  // Obtener cotizaciones del índice actual
   useEffect(() => {
     const fetchCotizaciones = async () => {
       setCargando(true);
@@ -51,7 +51,6 @@ const CotizacionIndice = () => {
     fetchCotizaciones();
   }, [code]);
 
-  // Obtener cotizaciones del índice comparado cuando se selecciona uno
   useEffect(() => {
     const fetchCotizacionesComparadas = async () => {
       if (!indiceSeleccionado) {
@@ -72,7 +71,6 @@ const CotizacionIndice = () => {
     fetchCotizacionesComparadas();
   }, [indiceSeleccionado]);
 
-  // Cargar índices disponibles desde el backend
   useEffect(() => {
     const cargarIndices = async () => {
       try {
@@ -91,7 +89,7 @@ const CotizacionIndice = () => {
   };
 
   const handleIndiceChange = (event) => {
-    setIndiceSeleccionado(event.target.value); // Cambiar el índice seleccionado
+    setIndiceSeleccionado(event.target.value);
   };
 
   if (cargando) {
@@ -115,7 +113,6 @@ const CotizacionIndice = () => {
     );
   }
 
-  // Determinar multiplicador según el idioma
   let multiplicador = 1;
   if (idioma === 'ru') {
     multiplicador = 98;
@@ -127,55 +124,68 @@ const CotizacionIndice = () => {
       <Box
         sx={{
           display: 'flex',
-          justifyContent: 'space-between',
+          justifyContent: esMobile ? 'center' : 'space-between',
           alignItems: 'center',
-          my: 4,
+          my: esMobile ? 2 : 4,
+          flexDirection: esMobile ? 'column' : 'row',
+          gap: esMobile ? 2 : 0,
         }}
       >
-        <Typography variant="h3" component="h1" gutterBottom>
+        <Typography
+          variant={esMobile ? 'h5' : 'h3'}
+          component="h1"
+          gutterBottom
+          sx={{ textAlign: esMobile ? 'center' : 'left' }}
+        >
           {i18next.t('cotizacionIndices')}
         </Typography>
         <Select
           value={filtro}
           onChange={handleFiltroChange}
           variant="outlined"
-          sx={{ width: '200px' }}
+          sx={{ width: esMobile ? '150px' : '200px' }}
         >
           <MenuItem value="dia">{i18next.t('dia')}</MenuItem>
           <MenuItem value="mes">{i18next.t('mes')}</MenuItem>
         </Select>
       </Box>
 
-      {/* Gráfico para las cotizaciones del índice */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+      {/* Gráfico */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          mb: esMobile ? 2 : 4,
+        }}
+      >
         <GraficoCotizacionHora
-          datosCotizaciones={cotizaciones.map(c => ({
+          datosCotizaciones={cotizaciones.map((c) => ({
             ...c,
-            cotization: c.valor * multiplicador, // Ajuste del multiplicador si es necesario
+            cotization: c.valor * multiplicador,
           }))}
           filtro={filtro}
-          segundoIndiceDatos={cotizacionesComparadas.map(c => ({
+          segundoIndiceDatos={cotizacionesComparadas.map((c) => ({
             ...c,
-            cotization: c.valor * multiplicador, // Ajuste del multiplicador si es necesario
+            cotization: c.valor * multiplicador,
           }))}
+          estiloGrafico={{ height: esMobile ? 300 : 500, width: '100%' }}
         />
       </Box>
 
       {/* Selector para comparar con otro índice */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: esMobile ? 2 : 4 }}>
         <Select
           value={indiceSeleccionado}
           onChange={handleIndiceChange}
           displayEmpty
           variant="outlined"
-          sx={{ width: '200px' }}
+          sx={{ width: esMobile ? '150px' : '200px' }}
         >
-          {/* Opción por defecto */}
           <MenuItem value="" disabled>
-            Seleccione un índice
+            {i18next.t('seleccioneIndice')}
           </MenuItem>
           {indicesDisponibles
-            .filter((indice) => indice.code !== code) // Excluir el índice actual
+            .filter((indice) => indice.code !== code)
             .map((indice) => (
               <MenuItem key={indice.code} value={indice.code}>
                 {indice.name}
@@ -186,8 +196,8 @@ const CotizacionIndice = () => {
 
       {/* Información adicional */}
       <Typography
-        variant="h5"
-        sx={{ textAlign: 'center', color: 'text.secondary', mb: 4 }}
+        variant={esMobile ? 'body1' : 'h5'}
+        sx={{ textAlign: 'center', color: 'text.secondary', mb: esMobile ? 2 : 4 }}
       >
         {i18next.t('cotizacionesDe')} {code}
       </Typography>
