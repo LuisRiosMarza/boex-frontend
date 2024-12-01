@@ -103,14 +103,18 @@ const GraficoCotizacionHora = ({ datosCotizaciones, segundoIndiceDatos, filtro }
         return agregarFechas(datosFiltrados, idioma);
       }
       if (filtro === "mes") {
-        const mesActual = new Date().getMonth();
-        const cotizacionesMes = datos.filter(cotizacion => {
+        // Obtener la fecha de hace 31 días
+        const fechaLimite = new Date();
+        fechaLimite.setDate(fechaLimite.getDate() - 31); // Restar 31 días
+      
+        // Filtrar las cotizaciones que estén dentro de los últimos 31 días
+        const cotizacionesUltimos31Dias = datos.filter(cotizacion => {
           const fechaCotizacion = new Date(cotizacion.fecha);
-          return fechaCotizacion.getMonth() === mesActual;
+          return fechaCotizacion >= fechaLimite; // Filtra por fechas posteriores a la fecha límite
         });
-
+      
         // Agrupar cotizaciones por día y calcular el promedio
-        const cotizacionesPorDia = cotizacionesMes.reduce((acumulador, cotizacion) => {
+        const cotizacionesPorDia = cotizacionesUltimos31Dias.reduce((acumulador, cotizacion) => {
           const fecha = cotizacion.fecha.split('T')[0]; // Obtener sólo la fecha
           if (!acumulador[fecha]) {
             acumulador[fecha] = { total: 0, count: 0 };
@@ -119,7 +123,7 @@ const GraficoCotizacionHora = ({ datosCotizaciones, segundoIndiceDatos, filtro }
           acumulador[fecha].count += 1;
           return acumulador;
         }, {});
-
+      
         // Calcular el promedio diario
         return Object.keys(cotizacionesPorDia).map(fecha => {
           const promedio = cotizacionesPorDia[fecha].total / cotizacionesPorDia[fecha].count;
@@ -128,7 +132,7 @@ const GraficoCotizacionHora = ({ datosCotizaciones, segundoIndiceDatos, filtro }
             value: promedio,
           };
         });
-      }
+      }      
     };
 
     // Procesar y ordenar datos para la serie principal

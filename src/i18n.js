@@ -41,7 +41,8 @@ i18next
                     descripcionEstadisticasMercado: "Consulta estadísticas detalladas sobre el rendimiento de las acciones y mercados en general.",
                     analisisFinanciero: "Análisis Financiero",
                     descripcionAnalisisFinanciero: "Obtén análisis detallados y predicciones basadas en el comportamiento histórico del mercado.",
-                    verEmpresas: "Ver empresas"
+                    verEmpresas: "Ver empresas",
+                    errorCotizaciones: "No se encontraron cotizaciones"
                 },
             },
             ru: {
@@ -79,7 +80,8 @@ i18next
                     descripcionEstadisticasMercado: "Просматривайте подробную статистику о производительности акций и рынков в целом.",
                     analisisFinanciero: "Финансовый анализ",
                     descripcionAnalisisFinanciero: "Получите подробный анализ и прогнозы, основанные на историческом поведении рынка.",
-                    verEmpresas: "Посмотреть компании"
+                    verEmpresas: "Посмотреть компании",
+                    errorCotizaciones: "Цитаты не найдены"
                 },
             },
         }
