@@ -41,7 +41,6 @@ const GraficoCotizacionHora = ({ datosCotizaciones, segundoIndiceDatos, filtro }
     // Obtener el idioma desde localStorage y actualizar el estado
     const idiomaGuardado = localStorage.getItem('idioma') || 'es'; // Si no hay idioma, usar 'es' como predeterminado
     setIdioma(idiomaGuardado);
-    //console.log(idiomaGuardado);
 
     const chart = createChart(chartRef.current, {
       layout: {
@@ -65,7 +64,6 @@ const GraficoCotizacionHora = ({ datosCotizaciones, segundoIndiceDatos, filtro }
     // Crear la segunda serie si hay datos para el segundo índice
     let secondSeries;
     if (segundoIndiceDatos && segundoIndiceDatos.length > 0) {
-      //console.log(segundoIndiceDatos)
       secondSeries = chart.addLineSeries({
         color: "#34eb77", // Diferente color para distinguir la segunda línea
         lineWidth: 2,
@@ -103,17 +101,14 @@ const GraficoCotizacionHora = ({ datosCotizaciones, segundoIndiceDatos, filtro }
         return agregarFechas(datosFiltrados, idioma);
       }
       if (filtro === "mes") {
-        // Obtener la fecha de hace 31 días
         const fechaLimite = new Date();
         fechaLimite.setDate(fechaLimite.getDate() - 31); // Restar 31 días
-      
-        // Filtrar las cotizaciones que estén dentro de los últimos 31 días
+
         const cotizacionesUltimos31Dias = datos.filter(cotizacion => {
           const fechaCotizacion = new Date(cotizacion.fecha);
-          return fechaCotizacion >= fechaLimite; // Filtra por fechas posteriores a la fecha límite
+          return fechaCotizacion >= fechaLimite;
         });
-      
-        // Agrupar cotizaciones por día y calcular el promedio
+
         const cotizacionesPorDia = cotizacionesUltimos31Dias.reduce((acumulador, cotizacion) => {
           const fecha = cotizacion.fecha.split('T')[0]; // Obtener sólo la fecha
           if (!acumulador[fecha]) {
@@ -123,7 +118,34 @@ const GraficoCotizacionHora = ({ datosCotizaciones, segundoIndiceDatos, filtro }
           acumulador[fecha].count += 1;
           return acumulador;
         }, {});
-      
+
+        return Object.keys(cotizacionesPorDia).map(fecha => {
+          const promedio = cotizacionesPorDia[fecha].total / cotizacionesPorDia[fecha].count;
+          return {
+            time: Math.floor(new Date(fecha).getTime() / 1000), // Convertir a timestamp en segundos
+            value: promedio,
+          };
+        });
+      }
+      if (filtro === "anio") {
+        const fechaInicioAnio = new Date(new Date().getFullYear(), 0, 1); // 1 de enero del año actual
+
+        const cotizacionesAnio = datos.filter(cotizacion => {
+          const fechaCotizacion = new Date(cotizacion.fecha);
+          return fechaCotizacion >= fechaInicioAnio; // Filtra por fechas desde el 1 de enero
+        });
+
+        // Agrupar cotizaciones por día y calcular el promedio
+        const cotizacionesPorDia = cotizacionesAnio.reduce((acumulador, cotizacion) => {
+          const fecha = cotizacion.fecha.split('T')[0]; // Obtener sólo la fecha
+          if (!acumulador[fecha]) {
+            acumulador[fecha] = { total: 0, count: 0 };
+          }
+          acumulador[fecha].total += (cotizacion.cotization || cotizacion.valorIndice);
+          acumulador[fecha].count += 1;
+          return acumulador;
+        }, {});
+
         // Calcular el promedio diario
         return Object.keys(cotizacionesPorDia).map(fecha => {
           const promedio = cotizacionesPorDia[fecha].total / cotizacionesPorDia[fecha].count;
@@ -132,7 +154,7 @@ const GraficoCotizacionHora = ({ datosCotizaciones, segundoIndiceDatos, filtro }
             value: promedio,
           };
         });
-      }      
+      }
     };
 
     // Procesar y ordenar datos para la serie principal

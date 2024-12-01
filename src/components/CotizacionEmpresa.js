@@ -135,6 +135,7 @@ const CotizacionEmpresa = () => {
         >
           <MenuItem value="dia">{i18next.t('dia')}</MenuItem>
           <MenuItem value="mes">{i18next.t('mes')}</MenuItem>
+          <MenuItem value="anio">{i18next.t('anio')}</MenuItem>
         </Select>
       </Box>
 
