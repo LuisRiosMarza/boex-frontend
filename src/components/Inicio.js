@@ -2,12 +2,13 @@
 import React from 'react';
 import { Container, Typography, Button, Grid, Box } from '@mui/material';
 import { Carousel as MUICarousel } from 'react-responsive-carousel';
-import { useTranslation } from 'react-i18next';  // Importa i18next para cambiar el idioma
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
-import 'react-responsive-carousel/lib/styles/carousel.min.css'; // Asegúrate de importar el estilo
+import 'react-responsive-carousel/lib/styles/carousel.min.css'; 
 
 const Inicio = () => {
-  const { t } = useTranslation();  // Hook para la traducción
+  const { t } = useTranslation();
   
   return (
     <Container style={{ marginTop: '40px' }}>
@@ -80,7 +81,7 @@ const Inicio = () => {
 
       {/* Botón de llamada a la acción */}
       <Box textAlign="center" marginTop={4}>
-        <Button variant="contained" color="primary" href="/empresas" size="large">
+        <Button variant="contained" color="primary" component={Link} to="/empresas" size="large">
           {t('verEmpresas')}
         </Button>
       </Box>
