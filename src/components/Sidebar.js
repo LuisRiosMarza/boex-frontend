@@ -4,6 +4,7 @@ import { List, ListItem, ListItemText, useTheme, useMediaQuery } from '@mui/mate
 import { Link } from 'react-router-dom';
 import { obtenerEmpresas } from '../services/empresasService';
 import i18next from 'i18next';
+import { color } from '@mui/system';
 
 const Sidebar = () => {
   const [empresas, setEmpresas] = useState([]);
@@ -49,14 +50,14 @@ const Sidebar = () => {
       <List>
         {empresas.map((empresa) => (
           <ListItem button component={Link} to={`/${empresa.codempresa}`} key={empresa._id}>
-            <ListItemText primary={empresa.empresaNombre} />
-          </ListItem>
+        <ListItemText primary={empresa.empresaNombre} style={{color: '#000000'}} />
+      </ListItem>
         ))}
-        <ListItem button component={Link} to="/agregarEmpresa">
-          <ListItemText primary={textoAgregarEmpresa} />
-        </ListItem>
-      </List>
-    </div>
+      <ListItem button component={Link} to="/agregarEmpresa">
+        <ListItemText primary={textoAgregarEmpresa} style={{color: '#000000'}} />
+      </ListItem>
+    </List>
+    </div >
   );
 };
 
